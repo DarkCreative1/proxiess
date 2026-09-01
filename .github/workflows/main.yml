@@ -2,7 +2,7 @@ name: Proxy listesini güncelle
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "3/10 * * * *"
   workflow_dispatch:
     inputs:
       max_checks:
