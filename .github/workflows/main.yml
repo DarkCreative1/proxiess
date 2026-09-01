@@ -8,7 +8,7 @@ on:
       max_checks:
         description: "Kontrol edilecek maksimum proxy"
         required: false
-        default: "10000"
+        default: "20000"
 
 permissions:
   contents: write
