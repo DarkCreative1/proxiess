@@ -1,0 +1,56 @@
+name: Proxy listesini güncelle
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      max_checks:
+        description: "Kontrol edilecek maksimum proxy"
+        required: false
+        default: "10000"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: proxy-checker
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MAX_CHECKS: ${{ inputs.max_checks || '10000' }}
+      CONCURRENCY: "500"
+      PROXY_TIMEOUT: "3.0"
+      OUTPUT_DIR: results
+
+    steps:
+      - name: Repoyu indir
+        uses: actions/checkout@v4
+
+      - name: Python kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Bağımlılıkları kur
+        run: pip install -r requirements.txt
+
+      - name: Proxyleri çek ve kontrol et
+        run: python run_action.py
+
+      - name: Sonuç değiştiyse yayınla
+        run: |
+          if [ -z "$(git status --porcelain -- results/)" ]; then
+            echo "Proxy listesinde değişiklik yok."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/
+          git commit -m "chore: proxy listesini güncelle"
+          git push
