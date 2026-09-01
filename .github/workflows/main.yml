@@ -8,7 +8,7 @@ on:
       max_checks:
         description: "Kontrol edilecek maksimum proxy"
         required: false
-        default: "20000"
+        default: "40000"
 
 permissions:
   contents: write
@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 25
     env:
       MAX_CHECKS: ${{ inputs.max_checks || '10000' }}
-      CONCURRENCY: "500"
+      CONCURRENCY: "1000"
       PROXY_TIMEOUT: "3.0"
       OUTPUT_DIR: results
 
